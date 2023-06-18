@@ -1,5 +1,5 @@
-// first lab os, 
-// #include<bits/stdc++.h>
+// g++ .\1-1-alternative-command.cpp -o 1-1-alternative-command
+// .\1-1-alternative-command args
 #include<iostream>
 #include<fstream>
 #include<windows.h>
