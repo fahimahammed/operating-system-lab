@@ -83,3 +83,5 @@ int main()
 	cout << "Page Hits = " << n - numOfPageFault << endl;
 	return 0;
 }
+
+// https://slideplayer.com/slide/6026617/20/images/58/Page+Replacement+Algorithms+Counting+Algorithms%3A+LFU+scheme.jpg
