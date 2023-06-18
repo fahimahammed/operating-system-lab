@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    //freopen("FirstFitInput.txt", "r", stdin);
+    freopen("input.txt", "r", stdin);
     ll i, j, p, processNum, blockNum;
     bool flag = true;
     vector<ll> processSize, blockNo, blockSize;
