@@ -76,8 +76,9 @@ int pageFaults(int n, int c, int pages[])
 int main()
 {
 
-	int pages[] = { 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 };
-	int n = 12, c = 4;
+	//int pages[] = { 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 };
+	int pages[] = { 3, 1, 2, 1, 6, 5, 1, 3 };
+	int n = 8, c = 3;
     int numOfPageFault = pageFaults(n, c, pages);
 	cout << "Page Faults = " << numOfPageFault << endl;
 	cout << "Page Hits = " << n - numOfPageFault << endl;
