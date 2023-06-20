@@ -42,3 +42,13 @@ int main()
     }
     return 0;
 }
+
+/**
+Enter the process number: 3
+Enter the id, burst time, and priority for process 1: 1 10 2
+Enter the id, burst time, and priority for process 2: 2 5 0
+Enter the id, burst time, and priority for process 3: 3 8 1
+Process 1 has waiting time: 0 and turnaround time: 10
+Process 3 has waiting time: 10 and turnaround time: 18
+Process 2 has waiting time: 18 and turnaround time: 23
+*/
