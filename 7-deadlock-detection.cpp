@@ -1,68 +1,110 @@
-#include<iostream>
+#include <bits/stdc++.h>
 using namespace std;
+struct Snapshot {
+  int n, m;
+  vector<vector<int>> allocation, request;
+  vector<int> available;
+  Snapshot(int n, int m, vector<vector<int>> allocation, vector<vector<int>> request, vector<int> available) {
+    this->n = n;
+    this->m = m;
+    this->allocation = allocation;
+    this->request = request;
+    this->available = available;
+  }
+  bool isDeadLock() {
+    vector<int> work = available;
+    vector<bool> finish(n, false);
+    int count = 0;
 
-int main()
-{
-    int processNum, resourceNum, i, j, k;
-    processNum = 3;
-    resourceNum = 3;
-    int allocation[processNum][resourceNum] = {{3, 3, 3},
-                                               {2, 0, 3},
-                                               {1, 2, 4}};
-    int max[processNum][resourceNum] = {{3, 6, 8},
-                                        {4, 3, 3},
-                                        {3, 4, 4}};
-    int available[resourceNum] = {1, 2, 0};
-
-    int finish[processNum], ans[processNum], index = 0, need[processNum][resourceNum];
-
-    for(i = 0; i<processNum; i++){
-        finish[i] = 0;
-    }
-
-    for(i = 0; i<processNum; i++){
-        for(j = 0; j<resourceNum; j++){
-            need[i][j] = max[i][j] - allocation[i][j];
-        }
-    }
-
-    int y = 0;
-    for(k = 0; k<processNum; k++){
-        for(i=0; i<processNum; i++){
-            if(finish[i] == 0){
-                int flag = 0;
-                for(j = 0; j<resourceNum; j++){
-                    if(need[i][j] > available[j]){
-                        flag = 1;
-                        break;
-                    }
-                }
-
-                if(flag == 0){
-                    ans[index++] = i;
-                    for(y = 0; y<resourceNum; y++){
-                        available[y] = available[y] + allocation[i][y];
-                    }
-                    finish[i] = 1;
-                }
+    while (count < n) {
+      bool found = false;
+      for (int i = 0; i < n; i++) {
+        if (finish[i] == false) {
+          int j;
+          for (j = 0; j < m; j++) {
+            if (request[i][j] > work[j]) {
+              break;
             }
+          }
+          if (j == m) {
+            for (int k = 0; k < m; k++) {
+              work[k] += allocation[i][k];
+            }
+            finish[i] = true;
+            found = true;
+            count++;
+          }
         }
+      }
+      if (found == false) {
+        return true;
+      }
     }
-    int flag = 1;
-    for(i = 0; i<processNum; i++){
-        if(finish[i] == 0){
-            flag = 0;
-            cout << "The given sequence is not safe"<< endl;
-            break;
-        }
-    }
+    return false;
+  }
+};
 
-    if(flag == 1){
-        cout << "Safe sequence is ";
-        for(i = 0; i< processNum-1; i++){
-            cout<< " P" << ans[i] << " >";
-        }
-        cout << " P" << ans[processNum-1] << endl;
+Snapshot take_input() {
+  int n, m;
+  cout << "Enter number of processes: ";
+  cin >> n;
+  cout << "Enter number of resources: ";
+  cin >> m;
+  cout << "Enter Allocation matrix: " << endl;
+  vector<vector<int>> allocation(n, vector<int>(m));
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> allocation[i][j];
     }
-    return 0;
+  }
+  cout << "Enter Request matrix: " << endl;
+  vector<vector<int>> request(n, vector<int>(m));
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> request[i][j];
+    }
+  }
+  cout << "Enter Available resource: " << endl;
+  vector<int> available(m);
+  for (auto &it : available) {
+    cin >> it;
+  }
+  return Snapshot(n, m, allocation, request, available);
 }
+int main() {
+  auto snapshot = take_input();
+  if (snapshot.isDeadLock()) {
+    cout << "System is in DeadLoak" << endl;
+  } else {
+    cout << "System is runnig good" << endl;
+  }
+}
+
+
+/**
+Enter number of processes: 2
+Enter number of resources: 3
+Enter Allocation matrix:
+2 1 1
+0 1 0
+Enter Request matrix:
+0 0 1
+2 0 0
+Enter Available resource:
+1 0 0
+
+
+Enter number of processes: 3
+Enter number of resources: 4
+Enter Allocation matrix:
+1 1 2 1
+2 1 0 1
+0 2 1 1
+Enter Request matrix:
+0 0 1 0
+1 0 1 2
+0 1 0 0
+Enter Available resource:
+2 2 1 1
+
+*/

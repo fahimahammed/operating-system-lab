@@ -1,76 +1,110 @@
 #include <bits/stdc++.h>
 using namespace std;
-int n, p, b, q, turn = 0, t = 0;
-map<int, int> TurnOver;
-vector<int> BT(10000);
-vector<int> Task, Time;
-vector<pair<int, pair<int, int>>> V;
-void Round_Robin(queue<pair<int, int>> Burst, int quan) {
-  while (!Burst.empty()) {
-    pair<int, int> a;
-    a = Burst.front();
-    Burst.pop();
-    if (a.second <= quan) {
-      t += a.second;
-      TurnOver[a.first] = t;
-      Time.push_back(t);
-      Task.push_back(a.first);
+struct Snapshot {
+  int n, m;
+  vector<vector<int>> allocation, request;
+  vector<int> available;
+  Snapshot(int n, int m, vector<vector<int>> allocation, vector<vector<int>> request, vector<int> available) {
+    this->n = n;
+    this->m = m;
+    this->allocation = allocation;
+    this->request = request;
+    this->available = available;
+  }
+  bool isDeadLock() {
+    vector<int> work = available;
+    vector<bool> finish(n, false);
+    int count = 0;
 
-    } else {
-      t += quan;
-      a.second -= quan;
-      Time.push_back(t);
-      Task.push_back(a.first);
-      Burst.push(a);
+    while (count < n) {
+      bool found = false;
+      for (int i = 0; i < n; i++) {
+        if (finish[i] == false) {
+          int j;
+          for (j = 0; j < m; j++) {
+            if (request[i][j] > work[j]) {
+              break;
+            }
+          }
+          if (j == m) {
+            for (int k = 0; k < m; k++) {
+              work[k] += allocation[i][k];
+            }
+            finish[i] = true;
+            found = true;
+            count++;
+          }
+        }
+      }
+      if (found == false) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+Snapshot take_input() {
+  int n, m;
+  cout << "Enter number of processes: ";
+  cin >> n;
+  cout << "Enter number of resources: ";
+  cin >> m;
+  cout << "Enter Allocation matrix: " << endl;
+  vector<vector<int>> allocation(n, vector<int>(m));
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> allocation[i][j];
     }
   }
+  cout << "Enter Request matrix: " << endl;
+  vector<vector<int>> request(n, vector<int>(m));
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> request[i][j];
+    }
+  }
+  cout << "Enter Available resource: " << endl;
+  vector<int> available(m);
+  for (auto &it : available) {
+    cin >> it;
+  }
+  return Snapshot(n, m, allocation, request, available);
 }
 int main() {
-  cin >> n >> q;
-  for (int i = 1; i <= n; i++) {
-    cin >> p >> b;
-    V.push_back({p, {i, b}});
-    BT[i] = b;
-  }
-  sort(V.begin(), V.end());
-  queue<pair<int, int>> Burst;
-  for (int i = 0; i < n; i++) {
-    if ((V[i].first != V[i + 1].first)) {
-      t += V[i].second.second;
-      TurnOver[V[i].second.first] = t;
-      Time.push_back(t);
-      Task.push_back(V[i].second.first);
-    } else {
-      Burst.push({V[i].second.first, V[i].second.second});
-      int k = i + 1;
-      while (V[i].first == V[k].first) {
-        Burst.push({V[k].second.first, V[k].second.second});
-        k++;
-      }
-      i = --k;
-      Round_Robin(Burst, q);
-    }
-  }
-  cout << "TASK :  ";
-  int avgT = 0, avgW = 0;
-  for (int i = 1; i <= n; i++) {
-    cout << i << " ";
-  }
-  cout << endl << "TURN :  ";
-  for (int i = 1; i <= n; i++) {
-    cout << TurnOver[i] << " ";
-    avgT += TurnOver[i];
-  }
-  cout << endl << "Wait :  ";
-  for (int i = 1; i <= n; i++) {
-    cout << TurnOver[i] - BT[i] << " ";
-    avgW += TurnOver[i] - BT[i];
-  }
-  cout << endl;
-  cout << "AVERAGE TURNOVER : " << (double)avgT / n << endl;
-  cout << "AVG WAITING : " << (double)avgW / n << endl;
-  cout << "THE GANDCHART: " << endl << 0;
-  for (int i = 0; i < Time.size(); i++) {
-    cout << "---P" << Task[i] << "---" << Time[i];
+  auto snapshot = take_input();
+  if (snapshot.isDeadLock()) {
+    cout << "System is in DeadLoak" << endl;
+  } else {
+    cout << "System is runnig good" << endl;
   }
 }
+
+
+/**
+Enter number of processes: 2
+Enter number of resources: 3
+Enter Allocation matrix:
+2 1 1
+0 1 0
+Enter Request matrix:
+0 0 1
+2 0 0
+Enter Available resource:
+1 0 0
+
+
+Enter number of processes: 3
+Enter number of resources: 4
+Enter Allocation matrix:
+1 1 2 1
+2 1 0 1
+0 2 1 1
+Enter Request matrix:
+0 0 1 0
+1 0 1 2
+0 1 0 0
+Enter Available resource:
+2 2 1 1
+
+*/
